@@ -1,13 +1,12 @@
 import * as React from "react"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { v4 as uuid } from "uuid"
 //import { useAppointments } from "../hooks/useAppointments"
+
 import {
     Popover,
     PopoverContent,
@@ -29,7 +28,7 @@ import { useForm } from "react-hook-form"
 import type { SubmitHandler } from "react-hook-form"
 import { Controller } from "react-hook-form"
 
-export function AppointmentForm({ addAppointment }: any) {
+export function AppointmentForm() {
     //const { addAppointment } = useAppointments();
 
     const [open, setOpen] = React.useState(false)
