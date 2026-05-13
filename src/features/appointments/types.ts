@@ -1,5 +1,5 @@
 
-import  type {  AppointmentBase  } from "../appointments/services/validation"
+import type { AppointmentBase } from "../appointments/services/validation"
 
 export type Appointment = AppointmentBase & {
     id: string
@@ -7,7 +7,6 @@ export type Appointment = AppointmentBase & {
 }
 
 export const doctores = [
-
     { label: "Dra. Elena Santillán", value: "Elena Santillán" },
     { label: "Dr. Julián Valdivieso", value: "Julián Valdivieso" },
     { label: "Dra. Beatriz Riva", value: "Beatriz Riva" },
@@ -16,6 +15,12 @@ export const doctores = [
     { label: "Dra. Clara Inés", value: "Clara Inés" },
     { label: "Dr. Leo Castelli", value: "Leo Castelli" },
 ]
+export const doctorOptions = doctores.map(d => d.value) as [
+    string,
+    ...string[]
+]
 
-
+export const style = {
+    backgroundColor: "#ffffff"
+}
 

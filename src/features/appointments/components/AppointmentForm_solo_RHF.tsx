@@ -30,7 +30,7 @@ import { Controller } from "react-hook-form"
 
 export function AppointmentForm() {
     //const { addAppointment } = useAppointments();
-
+    // citas
     const [open, setOpen] = React.useState(false)
 
     const { register, handleSubmit, control, formState: { errors } } = useForm<Appointment>()

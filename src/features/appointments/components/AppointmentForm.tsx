@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Textarea } from "@/components/ui/textarea"
 
 import {
     Popover,
@@ -30,11 +31,14 @@ import { Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { appointmentSchema } from "../services/validation"
 import type { AppointmentBase } from "../services/validation"
+import { style } from "../types"
+import { appointmentDefaultValues } from "../services/appointmentDefaults"
+
+
 
 type Props = {
     addAppointment: (a: Appointment) => void
 }
-
 
 export function AppointmentForm({ addAppointment }: Props) {
 
@@ -42,63 +46,41 @@ export function AppointmentForm({ addAppointment }: Props) {
     
     const { register, handleSubmit, control, formState: { errors } } = useForm<AppointmentBase>({
         resolver: zodResolver(appointmentSchema),
-        defaultValues: {
-            doctor: "",
-            paciente: "",
-            fecha: undefined,
-            hora: ""
-        }
+        defaultValues: appointmentDefaultValues
     })
-
-
+    
     const onSubmit: SubmitHandler<AppointmentBase> = (data) => {
-
+        
         const nuevaCita: Appointment = {
             ...data,
-            fecha: data.fecha, // ya validada
             id: crypto.randomUUID(),
             status: "confirmado"
         }
-
         addAppointment(nuevaCita)
         
     }
-
+    
     return (
         <>
-            <div className="bg-white rounded-sm shadow p-3">
+            <div className="rounded-sm shadow-lg p-3" style={style}>
                 <form onSubmit={handleSubmit(onSubmit)}>
 
                     <FieldGroup className="grid grid-cols-12 ">
-                        <Field className="col-span-3">
-
+                        <Field className="col-span-2">
                             <FieldLabel htmlFor="date-picker-optional">Fecha</FieldLabel>
-
+                            
                             <Controller name="fecha" control={control}
-                                rules={{
-                                    required: "Selecciona una fecha",
-                                    validate: (value) => {
-                                        if (!value) return "Fecha inválida"
-
-                                        const hoy = new Date()
-                                        hoy.setHours(0, 0, 0, 0)
-
-                                        if (value < hoy) {
-                                            return "No puedes seleccionar una fecha pasada"
-                                        }
-
-                                        return true
-                                    }
-                                }}
+                                
                                 render={({ field }) => (
+                                    
                                     <Popover open={open} onOpenChange={setOpen}>
                                         <PopoverTrigger
                                             render={
                                                 <Button variant="outline" className="w-full justify-between font-normal">
-                                                    {field.value ? format(field.value, "PPP") : "Selecciona"} <ChevronDownIcon />
+                                                    {field.value ? format(field.value, "PP") : "Selecciona"} <ChevronDownIcon />
                                                 </Button>
                                             } />
-
+                                            
                                         <PopoverContent className="w-auto p-0" align="start">
                                             <Calendar
                                                 mode="single"
@@ -107,6 +89,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                                                     field.onChange(date ?? null)
                                                     setOpen(false)
                                                 }}
+                                                
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -117,38 +100,40 @@ export function AppointmentForm({ addAppointment }: Props) {
                                 </p>
                             )}
                         </Field>
-
-                        <Field className="col-span-3">
-                            <FieldLabel htmlFor="time-picker-optional">Hora</FieldLabel>
+                        
+                        <Field className="col-span-2">
+                            <FieldLabel htmlFor="time-picker-optional">Hora inicio</FieldLabel>
                             <Input
                                 type="time"
                                 step="60"
                                 className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                {...register("hora", {
-                                    required: "Selecciona una hora",
-                                    validate: (value) => {
-                                        const [h] = value.split(":").map(Number)
-                                        if (h < 9 || h >= 18) {
-                                            return "Horario fuera de atención (9:00 - 18:00)"
-                                        }
-                                        return true
-                                    }
-                                })}
+                                {...register("horaStart")}
                             />
-                            {errors.hora && (
+                            {errors.horaStart && (
                                 <p className="text-red-500 text-sm">
-                                    {errors.hora.message}
+                                    {errors.horaStart.message}
                                 </p>
                             )}
                         </Field>
-                        <Field className="col-span-3">
+                        <Field className="col-span-2">
+                            <FieldLabel htmlFor="time-picker-optional">Hora fin</FieldLabel>
+                            <Input
+                                type="time"
+                                step="60"
+                                className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                {...register("horaEnd")}
+                            />
+                            {errors.horaEnd && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.horaEnd.message}
+                                </p>
+                            )}
+                        </Field>
+                        <Field className="col-span-2">
                             <FieldLabel>Nombre del doctor</FieldLabel>
+                            
+                            <Controller name="doctor" control={control}
 
-                            <Controller name="doctor" control={control} rules={{
-                                required: "Selecciona un doctor",
-                                validate: (value) =>
-                                    value !== "doc1" || "Este doctor no esta disponible"
-                            }}
                                 render={({ field }) => (
                                     <Select value={field.value ?? ""} onValueChange={(value) =>
                                         field.onChange(value ?? "")
@@ -156,7 +141,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                                         <SelectTrigger>
                                             <SelectValue placeholder="Selecciona doctor" />
                                         </SelectTrigger>
-
+                                        
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Dooctor</SelectLabel>
@@ -178,7 +163,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                             )}
                         </Field>
 
-                        <Field className="col-span-3">
+                        <Field className="col-span-2">
                             <FieldLabel>Nombre del paciente</FieldLabel>
                             <Input placeholder="Paciente" {...register("paciente", {
                                 required: "El paciente es obligatorio",
@@ -190,6 +175,15 @@ export function AppointmentForm({ addAppointment }: Props) {
                             {
                                 errors.paciente && (
                                     <p className="text-red-500">{errors.paciente.message}</p>
+                                )
+                            }
+                        </Field>
+                        <Field className="col-span-2">
+                            <FieldLabel>Sintomas / Notas</FieldLabel>
+                            <Textarea className="w-full" placeholder="Notas." {...register("notas")}/>
+                            {
+                                errors.notas && (
+                                    <p className="text-red-500">{errors.notas.message}</p>
                                 )
                             }
                         </Field>
