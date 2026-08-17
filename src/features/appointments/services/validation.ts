@@ -1,6 +1,4 @@
-import {  z } from "zod"
-
-import {  doctorOptions  } from "../types"
+import { z } from "zod"
 
 export const appointmentSchema = z.object({
 
@@ -18,7 +16,6 @@ export const appointmentSchema = z.object({
             message: "No puedes seleccionar una fecha pasada"
         }),
 
-
     horaStart: z
         .string()
         .min(1, "Selecciona una hora")
@@ -27,6 +24,20 @@ export const appointmentSchema = z.object({
             return h >= 9 && h < 18
         }, {
             message: "Horario fuera de atención (9-18)"
+        })
+        .refine((hora) => {
+            const [h, m] = hora.split(":").map(Number);
+            const ahora = new Date();
+            const horaActual = ahora.getHours();
+            const minutosActuales = ahora.getMinutes();
+
+            // Compara horas y minutos
+            if (h > horaActual) return true;
+            if (h === horaActual && m >= minutosActuales) return true;
+            
+            return false;
+        }, {
+            message: "Selecciona una hora correcta"
         }),
 
     horaEnd: z
@@ -37,13 +48,24 @@ export const appointmentSchema = z.object({
             return h >= 9 && h < 18
         }, {
             message: "Horario fuera de atención (9-18)"
+        })
+        .refine((hora)=>{
+            const [h, m] = hora.split(":").map(Number);
+            const ahora = new Date();
+            const horaActual = ahora.getHours();
+            const minutosActuales = ahora.getMinutes() + 20;
+            
+            if (h > horaActual) return true;
+            if (h === horaActual && m >= minutosActuales) return true;
+            
+            return false;
+        },{
+            message:"Selecciona una hora adecuada"
         }),
-
+        
     doctor: z
-        .enum(doctorOptions,{
-            message:"Selecciona un doctor"
-        }),
-
+        .string()
+        .min(1, "Selecciona un doctor"),
     paciente: z
         .string()
         .min(3, "Mínimo 3 caracteres")
@@ -70,14 +92,14 @@ export const appointmentSchema = z.object({
 
         const startTotal = startH * 60 + startM
         const endTotal = endH * 60 + endM
-        
+
         if (data.horaEnd <= data.horaStart) {
             ctx.addIssue({
                 code: "custom",
                 path: ["horaEnd"],
                 message: "La hora fin debe ser mayor que la hora inicio"
             })
-        }   
+        }
 
         if (endTotal - startTotal < 20) {
             ctx.addIssue({

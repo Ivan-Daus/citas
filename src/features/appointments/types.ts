@@ -6,20 +6,6 @@ export type Appointment = AppointmentBase & {
     status: "pendiente" | "confirmado" | "cancelado"
 }
 
-export const doctores = [
-    { label: "Dra. Elena Santillán", value: "Elena Santillán" },
-    { label: "Dr. Julián Valdivieso", value: "Julián Valdivieso" },
-    { label: "Dra. Beatriz Riva", value: "Beatriz Riva" },
-    { label: "Dr. Federico Lombardi", value: "Federico Lombardi" },
-    { label: "Dr. Hugo Tello", value: "Hugo Tello" },
-    { label: "Dra. Clara Inés", value: "Clara Inés" },
-    { label: "Dr. Leo Castelli", value: "Leo Castelli" },
-]
-export const doctorOptions = doctores.map(d => d.value) as [
-    string,
-    ...string[]
-]
-
 export const style = {
     backgroundColor: "#ffffff"
 }

@@ -21,13 +21,11 @@ type Props = {
 }
 export function AppointmentList({ appointments, cancelAppointment }: Props) {
     //const { appointments, cancelAppointment } = useAppointments()
-
     return (
         <>
-
-            <div className="space-y-2 h-[70vh] overflow-y-scroll p-2" >
+            <div className="space-y-2 h-[65vh] md:h-[34vh] xl:h-[65vh] overflow-y-scroll p-2 grid grid-cols-2 md:grid-cols-8 xl:grid-cols-10 gap-3 bg-zinc-100">
                 {appointments?.map((a) => (
-                    <div key={a.id} className="border p-3 rounded" style={style}>
+                    <div key={a.id} className="border hover:border-zinc-400 p-3 rounded col-span-2 md:col-span-4 xl:col-span-2" style={style}>
                         <p><b>Doctor:</b> {a.doctor}</p>
                         <p><b>Paciente:</b> {a.paciente}</p>
                         <p><b>Fecha:</b>

@@ -22,7 +22,6 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-import { doctores } from "../types"
 import type { Appointment } from "../types"
 import { useForm } from "react-hook-form"
 import type { SubmitHandler } from "react-hook-form"
@@ -38,35 +37,36 @@ import { appointmentDefaultValues } from "../services/appointmentDefaults"
 
 type Props = {
     addAppointment: (a: Appointment) => void
+    doctorName:any
 }
 
-export function AppointmentForm({ addAppointment }: Props) {
+export function AppointmentForm({ addAppointment,doctorName }: Props) {
 
     const [open, setOpen] = React.useState(false)
     
-    const { register, handleSubmit, control, formState: { errors } } = useForm<AppointmentBase>({
+    const { register, handleSubmit, control, formState: { errors },reset } = useForm<AppointmentBase>({
         resolver: zodResolver(appointmentSchema),
         defaultValues: appointmentDefaultValues
     })
     
     const onSubmit: SubmitHandler<AppointmentBase> = (data) => {
-        
+        alert("Cita creada")
         const nuevaCita: Appointment = {
             ...data,
             id: crypto.randomUUID(),
             status: "confirmado"
         }
         addAppointment(nuevaCita)
-        
+        console.log(nuevaCita)
+        reset();
     }
     
     return (
         <>
             <div className="rounded-sm shadow-lg p-3" style={style}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-
-                    <FieldGroup className="grid grid-cols-12 ">
-                        <Field className="col-span-2">
+                    <FieldGroup className="grid grid-cols-4 xl:grid-cols-12">
+                        <Field className="col-span-4 xl:col-span-2">
                             <FieldLabel htmlFor="date-picker-optional">Fecha</FieldLabel>
                             
                             <Controller name="fecha" control={control}
@@ -101,7 +101,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                             )}
                         </Field>
                         
-                        <Field className="col-span-2">
+                        <Field className="col-span-2 xl:col-span-2">
                             <FieldLabel htmlFor="time-picker-optional">Hora inicio</FieldLabel>
                             <Input
                                 type="time"
@@ -115,7 +115,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                                 </p>
                             )}
                         </Field>
-                        <Field className="col-span-2">
+                        <Field className="col-span-2 xl:col-span-2">
                             <FieldLabel htmlFor="time-picker-optional">Hora fin</FieldLabel>
                             <Input
                                 type="time"
@@ -129,11 +129,10 @@ export function AppointmentForm({ addAppointment }: Props) {
                                 </p>
                             )}
                         </Field>
-                        <Field className="col-span-2">
+                        <Field className="col-span-2 xl:col-span-2">
                             <FieldLabel>Nombre del doctor</FieldLabel>
                             
                             <Controller name="doctor" control={control}
-
                                 render={({ field }) => (
                                     <Select value={field.value ?? ""} onValueChange={(value) =>
                                         field.onChange(value ?? "")
@@ -146,9 +145,10 @@ export function AppointmentForm({ addAppointment }: Props) {
                                             <SelectGroup>
                                                 <SelectLabel>Dooctor</SelectLabel>
                                                 {
-                                                    doctores.map((item) => (
-                                                        <SelectItem key={item.value} value={item.value}>
-                                                            {item.label}
+                                                    doctorName.map((item:any) => (
+                                                        <SelectItem key={item.id.value} value={ item.name.first + " " + item.name.last}>
+                                                            {item.gender === "male" ? "Dr " +  item.name.first + " " + item.name.last : 
+                                                            "Dra " +  item.name.first + " " + item.name.last +  " " + item.id.name }
                                                         </SelectItem>
                                                     ))
                                                 }
@@ -162,7 +162,6 @@ export function AppointmentForm({ addAppointment }: Props) {
                                 </p>
                             )}
                         </Field>
-
                         <Field className="col-span-2">
                             <FieldLabel>Nombre del paciente</FieldLabel>
                             <Input placeholder="Paciente" {...register("paciente", {
@@ -178,7 +177,7 @@ export function AppointmentForm({ addAppointment }: Props) {
                                 )
                             }
                         </Field>
-                        <Field className="col-span-2">
+                        <Field className="col-span-4 xl:col-span-2">
                             <FieldLabel>Sintomas / Notas</FieldLabel>
                             <Textarea className="w-full" placeholder="Notas." {...register("notas")}/>
                             {
@@ -188,7 +187,9 @@ export function AppointmentForm({ addAppointment }: Props) {
                             }
                         </Field>
                     </FieldGroup>
-                    <Button type="submit" className="m-3">Crear cita</Button>
+                    <div className="col-span-4 xl:col-span-3">
+                        <Button type="submit" className="m-3 w-9/10 xl:w-80">Crear cita</Button>
+                    </div>
                 </form>
             </div>
         </>
